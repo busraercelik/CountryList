@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import { Table } from "reactstrap"
-import axios from "axios"
+import { connect } from "react-redux"
+import {getCountries} from "./redux/actions/actionCreator"
 
-function App() {
-  const [countries, setCountries] = useState([])
+function App(props) {
 
   useEffect(() => {
-    axios
-      .get("https://restcountries.eu/rest/v2/all")
-      .then((response) => setCountries(response.data))
-      .catch((error) => console.log({ error }))
+    props.getCountries();
   }, [])
 
+  console.log(props);
   return (
     <div>
       <h3>Countries</h3>
@@ -26,7 +24,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {countries.map((country) => (
+          {props.isLoading ? <img src="https://media0.giphy.com/media/cnzP4cmBsiOrccg20V/giphy.gif" alt="Loading" /> : props.countries.map((country) => (
             <tr key={country.name}>
               <td>{country.name}</td>
               <td>{country.capital}</td>
@@ -46,5 +44,11 @@ function App() {
     </div>
   )
 }
+const mapStateToProps = state => {
+  return{
+    countries: state.countries,
+    isLoading: state.isLoading
+  }
+}
 
-export default App
+export default connect(mapStateToProps, {getCountries})(App)
